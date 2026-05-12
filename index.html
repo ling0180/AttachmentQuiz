@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>依戀形式診斷測驗</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --surface2: #f4f1ec;
+    --border: #e8e2d9;
+    --text: #1a1714;
+    --text-muted: #7a7167;
+    --accent: #8b5e3c;
+    --accent-light: #f0e8e0;
+    --accent-mid: #c49a72;
+    --safe: #3a6b4a;
+    --safe-light: #e8f2eb;
+    --anxiety: #7a3a3a;
+    --anxiety-light: #f2e8e8;
+    --avoid: #3a4a6b;
+    --avoid-light: #e8ebf2;
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s ease;
+  }
+
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-mid);
+    margin-bottom: 0.75rem;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+
+  .header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    animation: fadeUp 0.5s ease;
+  }
+
+  /* Progress */
+  .progress-area {
+    margin-bottom: 1.75rem;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-meta span {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .progress-meta .pct {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-mid), var(--accent));
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Question */
+  .q-number {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent-mid);
+    margin-bottom: 0.75rem;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .q-text {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    min-height: 60px;
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1.75rem;
+  }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .opt:hover {
+    border-color: var(--accent-mid);
+    background: var(--accent-light);
+  }
+
+  .opt.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  .opt-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .opt.selected .opt-circle {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .opt.selected .opt-circle::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 11px 24px;
+    border-radius: var(--radius);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .btn:hover:not(:disabled) {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 500;
+    padding: 11px 32px;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #7a5234;
+    border-color: #7a5234;
+    color: white;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Result */
+  .result-header {
+    text-align: center;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent-mid);
+    font-family: 'Noto Serif TC', serif;
+    margin-bottom: 0.5rem;
+  }
+
+  .result-type-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .score-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+
+  .score-item.top {
+    background: var(--accent-light);
+    border-color: var(--accent-mid);
+    transform: scale(1.03);
+  }
+
+  .score-item-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .score-item.top .score-item-label {
+    color: var(--accent);
+  }
+
+  .score-item-val {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .score-item.top .score-item-val { color: var(--accent); }
+
+  .score-item-type {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .score-item.top .score-item-type { color: var(--accent-mid); }
+
+  .result-desc-box {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-desc-box p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.9;
+  }
+
+  .result-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .restart-btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .restart-btn:hover { background: var(--surface2); color: var(--text); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  /* Type colors */
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .badge-safe { background: var(--safe-light); color: var(--safe); }
+  .badge-anxiety { background: var(--anxiety-light); color: var(--anxiety); }
+  .badge-avoid { background: var(--avoid-light); color: var(--avoid); }
+  .badge-mixed { background: var(--accent-light); color: var(--accent); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { animation: fadeUp 0.35s ease; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-label">Attachment Style Assessment</div>
+    <h1>依戀形式測驗</h1>
+    <p>共 45 題，請依直覺選擇最符合自身狀況的選項</p>
+  </div>
+
+  <!-- Quiz -->
+  <div class="card" id="quizCard">
+    <div class="progress-area">
+      <div class="progress-meta">
+        <span id="qnum">問題 1 / 45</span>
+        <span class="pct" id="pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="q-number" id="qnumLabel">Q01</div>
+    <div class="q-text" id="qtext"></div>
+    <div class="options" id="opts"></div>
+
+    <div class="nav">
+      <button class="btn" id="prevBtn" onclick="prev()">← 上一題</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="next()" disabled>下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="card" id="resultCard" style="display:none">
+    <div class="result-header fade-in">
+      <div class="result-label">測驗結果</div>
+      <div id="resultBadge"></div>
+      <div class="result-type-name" id="resultTypeName"></div>
+    </div>
+
+    <div class="score-grid" id="scoreGrid"></div>
+
+    <div class="result-desc-box fade-in">
+      <p id="resultDesc"></p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-note" id="resultNote"></div>
+
+    <button class="restart-btn" onclick="restart()">重新測驗</button>
+  </div>
+
+  <div class="footer">本測驗僅供自我認識參考，不構成臨床診斷</div>
+</div>
+
+<script>
+const questions = [
+  {q:"你是積極嘗試新事物，勇於前往沒去過的地方，認識新朋友的人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你無論和誰都能馬上熟稔，放鬆心情相處嗎？",opts:["是","否","兩者皆非"]},
+  {q:"遇上麻煩時，你會樂觀地認為「總有辦法解決」嗎？",opts:["是","否","兩者皆非"]},
+  {q:"打從心底信任親近的朋友或熟人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"個性上有容易指責別人，攻擊性強的傾向嗎？",opts:["是","否","兩者皆非"]},
+  {q:"初次嘗試新事情時，容易感到不安嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你的父母（養育者）有時會對你冷淡嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你認為人會在緊急時刻背叛或不可靠嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你的父母（養育者）批評你的時候比嘉許你的時候多？",opts:["是","否","兩者皆非"]},
+  {q:"回憶童年時代，開心的記憶比較多嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你非常感謝你的父母（養育者）嗎？",opts:["是","否","兩者皆非"]},
+  {q:"難過的時候，只要想起父母或家人，心情就能平靜下來嗎？",opts:["是","否","兩者皆非"]},
+  {q:"即使對方不在身邊，你也能長久惦記著一個人嗎？還是馬上就會尋求別人的陪伴？",opts:["能長久惦記一個人","馬上就會尋求別人的陪伴","兩者皆非"]},
+  {q:"你是好惡分明的人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"曾經認為某個人是非常好的人，最後卻產生幻滅的心情或開始討厭對方嗎？",opts:["經常如此","不常如此","兩者皆非"]},
+  {q:"你是經常感覺煩躁或沮喪的人嗎？",opts:["經常如此","不常如此","兩者皆非"]},
+  {q:"認為自己沒有什麼值得一提的優點？",opts:["經常如此","不常如此","兩者皆非"]},
+  {q:"曾因懷疑自己被拒絕而陷入焦慮嗎？",opts:["經常如此","不常如此","兩者皆非"]},
+  {q:"比起優點，總是忍不住在意缺點嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你是對自己有自信的人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你是能不依賴別人，自己做出決定或採取行動的人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你認為自己是沒什麼人愛的人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"遇到討厭的事情時，會放在心上很久嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你的父母（養育者）經常做出傷害你的事嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你曾經對父母（養育者）懷有憤怒或怨恨的心情嗎？",opts:["是","否","兩者皆非"]},
+  {q:"難過的時候，你會希望身邊的人上前關心嗎？或者你不希望身邊的人上前關心？",opts:["需要關心","不需要關心","兩者皆非"]},
+  {q:"親密的人際關係，對你而言是重要的嗎？",opts:["非常重要","不怎麼重要","兩者皆非"]},
+  {q:"你總是冷靜無情嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你是否不喜歡太親暱的交友關係？",opts:["是","否","兩者皆非"]},
+  {q:"和曾經有交情的人分開後，馬上就會忘記對方嗎？",opts:["是","否","兩者皆非"]},
+  {q:"比起與人交往，認為自己的世界更重要嗎？",opts:["是","否","兩者皆非"]},
+  {q:"認為只有自己的力量才可靠嗎？",opts:["是","否","兩者皆非"]},
+  {q:"不怎麼懷念過去嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你是感情不輕易表現在臉上的人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你認為即使是戀人或配偶也不能侵犯你的隱私權？",opts:["是","否","兩者皆非"]},
+  {q:"你喜歡和親密的人肌膚相親，喜歡擁抱或肢體接觸嗎？還是不怎麼喜歡？",opts:["喜歡","不怎麼喜歡","兩者皆非"]},
+  {q:"幼年時的事記得很清楚嗎？還是大部分都不記得了？",opts:["記得很清楚","大部分都不記得","兩者皆非"]},
+  {q:"即使和關係親近的人在一起，還是會客套嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你認為遇到困難的時候，別人會好心幫助自己嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你是輕易就會接受別人好意的人嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你曾因為害怕失敗而逃避挑戰嗎？",opts:["是","否","兩者皆非"]},
+  {q:"與人分離時，你會感覺非常悲傷，內心激動嗎？",opts:["是","否","兩者皆非"]},
+  {q:"你不喜歡別人煩你，最好一個人自由自在地生活？",opts:["是","否","兩者皆非"]},
+  {q:"對你而言，「工作及學業」和「戀愛及人際關係」，哪一邊比較重要？",opts:["工作及學業","戀愛及人際關係","兩者皆非"]},
+  {q:"你受傷或沮喪的時候，別人的安慰或傾聽有多重要？",opts:["非常重要","不怎麼重要","兩者皆非"]}
+];
+
+// scoring[i] = { A: answer_num_for_A, B: ..., C: ... }
+const scoring = [
+  {A:1},{A:1},{A:1,C:2},{A:1},{A:2},{A:2},{A:2},{A:2},
+  {A:2},{A:1,B:2},{A:1,B:2},{A:1,B:2},{A:1,B:2},
+  {B:1},{B:1},{B:1},{B:1},{B:1},{B:1},{B:2},{B:2},
+  {A:2,B:1},{A:2,B:1},{A:2,B:1},{A:2,B:1},
+  {C:2},{C:2},{C:1},{C:1},{C:1},{C:1},{C:1},{C:1},{C:1},{C:1},{C:2},{C:2},
+  {A:2,B:1},{A:1},{A:1},{C:1},{B:1,C:2},{A:2,B:1,C:1},{A:2,B:1,C:1},{C:2}
+];
+
+let current = 0;
+let answers = new Array(45).fill(null);
+
+function render() {
+  const q = questions[current];
+  document.getElementById('qnum').textContent = `問題 ${current+1} / 45`;
+  document.getElementById('qnumLabel').textContent = `Q${String(current+1).padStart(2,'0')}`;
+  const pct = Math.round((current+1)/45*100);
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('prog').style.width = ((current)/45*100) + '%';
+  document.getElementById('qtext').textContent = q.q;
+
+  const opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (answers[current] === i+1 ? ' selected' : '');
+    btn.innerHTML = `<div class="opt-circle"></div><span>${o}</span>`;
+    btn.onclick = () => {
+      answers[current] = i+1;
+      render();
+    };
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('prevBtn').disabled = current === 0;
+  const nb = document.getElementById('nextBtn');
+  nb.disabled = answers[current] === null;
+  if (current === 44) {
+    nb.textContent = '查看結果 ✦';
+  } else {
+    nb.textContent = '下一題 →';
+  }
+}
+
+function next() {
+  if (answers[current] === null) return;
+  if (current === 44) { showResult(); return; }
+  current++;
+  render();
+  document.getElementById('qtext').style.animation = 'none';
+  setTimeout(() => { document.getElementById('qtext').style.animation = ''; }, 10);
+}
+
+function prev() {
+  if (current > 0) { current--; render(); }
+}
+
+function showResult() {
+  let A=0, B=0, C=0;
+  answers.forEach((ans, i) => {
+    if (ans === null) return;
+    const s = scoring[i];
+    if (s.A === ans) A++;
+    if (s.B === ans) B++;
+    if (s.C === ans) C++;
+  });
+
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('resultCard').style.display = 'block';
+
+  const max = Math.max(A, B, C);
+  const grid = document.getElementById('scoreGrid');
+  const types = [
+    {label:'A　安全型', val:A, colorClass:'safe'},
+    {label:'B　焦慮型', val:B, colorClass:'anxiety'},
+    {label:'C　逃避型', val:C, colorClass:'avoid'}
+  ];
+  grid.innerHTML = types.map(t => `
+    <div class="score-item ${t.val===max ? 'top' : ''}">
+      <div class="score-item-label">${t.label}</div>
+      <div class="score-item-val">${t.val}</div>
+      <div class="score-item-type">${t.val===max ? '最高分 ✦' : '分'}</div>
+    </div>`).join('');
+
+  const result = diagnose(A, B, C);
+  let badgeClass = 'badge-mixed';
+  if (result.type.includes('安全型') && !result.type.includes('焦慮') && !result.type.includes('逃避')) badgeClass = 'badge-safe';
+  else if (result.type.startsWith('焦慮')) badgeClass = 'badge-anxiety';
+  else if (result.type.startsWith('逃避')) badgeClass = 'badge-avoid';
+
+  document.getElementById('resultBadge').innerHTML = `<span class="badge ${badgeClass}">${result.category}</span>`;
+  document.getElementById('resultTypeName').textContent = result.type;
+  document.getElementById('resultDesc').textContent = result.desc;
+  document.getElementById('resultNote').textContent = `A（安全型）${A} 分　B（焦慮型）${B} 分　C（逃避型）${C} 分`;
+}
+
+function diagnose(A, B, C) {
+  if (A > B+5 && A > C+5)
+    return {type:'安全型', category:'Secure', desc:'依戀焦慮、依戀逃避分數都偏低，是最穩定的依戀形式。你在人際關係中通常感到安心，能夠自在地表達情感與需求，也能夠在需要時尋求支持。'};
+  if (B > A+5 && B > C+5)
+    return {type:'焦慮型', category:'Anxious', desc:'強烈的依戀焦慮，對人際關係非常敏感的類型。你可能在關係中較容易感到不安，對於被拒絕或被拋棄有強烈的擔憂，常需要確認對方的情感。'};
+  if (C > A+5 && C > B+5)
+    return {type:'逃避型', category:'Avoidant', desc:'強烈的依戀逃避，不容易與人建立親密關係的類型。你可能傾向於保持距離，重視獨立與個人空間，有時會對親密感到不自在或不知所措。'};
+  if (A > B && A > C && B >= 5)
+    return {type:'安全・焦慮型', category:'Secure-Anxious', desc:'看得出依戀焦慮的傾向，但整體而言仍屬穩定。你在大多數情況下表現安全，但偶爾在親密關係中會感到焦慮，特別是在不確定對方感受時。'};
+  if (A > B && A > C && C >= 5)
+    return {type:'安全・逃避型', category:'Secure-Avoidant', desc:'看得出依戀逃避的傾向，但整體而言仍屬穩定。你整體上是安全的，但有時會對過於親密的關係感到不自在，需要一定的個人空間。'};
+  if (B > A && B > C && A >= 5)
+    return {type:'焦慮・安全型', category:'Anxious-Secure', desc:'強烈的依戀焦慮，同時具備一定適應力的類型。你的焦慮傾向明顯，但也有一定的安全基礎支撐你，使你能夠在關係中找到一些平衡。'};
+  if (C > A && C > B && A >= 5)
+    return {type:'逃避・安全型', category:'Avoidant-Secure', desc:'強烈的依戀逃避，同時具備一定適應力的類型。你傾向迴避過度的親密，但也能在某些情況下建立有意義的連結。'};
+  if (B >= C && C >= A && B > 0)
+    return {type:'恐懼・逃避型', category:'Fearful-Avoidant', desc:'依戀焦慮和依戀逃避的傾向都很強，敏感、容易受傷、疑心較重的類型。你既渴望親密又害怕親密，在關係中常感到矛盾與不安，建議可以尋求專業支持。'};
+  return {type:'混合型', category:'Mixed', desc:'你的依戀形式較為複雜，各類型分數接近，難以歸類為單一形式。建議仔細閱讀各依戀形式的特徵描述，找出最符合自身感受的部分。'};
+}
+
+function restart() {
+  current = 0;
+  answers = new Array(45).fill(null);
+  document.getElementById('quizCard').style.display = 'block';
+  document.getElementById('resultCard').style.display = 'none';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
