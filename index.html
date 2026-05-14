@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>依戀形式診斷測驗</title>
+<title>依戀形式測驗</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -604,23 +604,43 @@ function showResult() {
 }
 
 function diagnose(A, B, C) {
-  if (A > B+5 && A > C+5)
-    return {type:'安全型', category:'Secure', desc:'依戀焦慮、依戀逃避分數都偏低，是最穩定的依戀形式。你在人際關係中通常感到安心，能夠自在地表達情感與需求，也能夠在需要時尋求支持。'};
-  if (B > A+5 && B > C+5)
-    return {type:'焦慮型', category:'Anxious', desc:'強烈的依戀焦慮，對人際關係非常敏感的類型。你可能在關係中較容易感到不安，對於被拒絕或被拋棄有強烈的擔憂，常需要確認對方的情感。'};
-  if (C > A+5 && C > B+5)
-    return {type:'逃避型', category:'Avoidant', desc:'強烈的依戀逃避，不容易與人建立親密關係的類型。你可能傾向於保持距離，重視獨立與個人空間，有時會對親密感到不自在或不知所措。'};
-  if (A > B && A > C && B >= 5)
+  // >> 定義：差距超過 5 分（非常大於）
+  // 純型的條件：最高分 >> 其他兩者，且第二高分 < 5（確保不落入混合型）
+
+  // 恐懼・逃避型：焦慮型、逃避型分數 >> 安全型分數（優先判斷，避免被其他規則吸收）
+  if (B > A+5 && C > A+5)
+    return {type:'恐懼・逃避型', category:'Fearful-Avoidant', desc:'依戀焦慮和依戀逃避的傾向都很強，敏感、容易受傷，疑心病重的類型。你既渴望親密又害怕親密，在關係中常感到矛盾與不安，建議可以尋求專業支持。'};
+
+  // 安全型：A >> B 且 A >> C，且 B < 5 且 C < 5（排除混合型）
+  if (A > B+5 && A > C+5 && B < 5 && C < 5)
+    return {type:'安全型', category:'Secure', desc:'依戀焦慮、依戀逃避分數都偏低，是最穩定的形式。你在人際關係中通常感到安心，能夠自在地表達情感與需求，也能夠在需要時尋求他人支持。'};
+
+  // 焦慮型：B >> A 且 B >> C，且 A < 5 且 C < 5
+  if (B > A+5 && B > C+5 && A < 5 && C < 5)
+    return {type:'焦慮型', category:'Anxious', desc:'強烈的依戀焦慮，對人際關係敏感的類型。你在關係中容易感到不安，對於被拒絕或被拋棄有強烈的擔憂，常需要對方的確認。'};
+
+  // 逃避型：C >> A 且 C >> B，且 A < 5 且 B < 5
+  if (C > A+5 && C > B+5 && A < 5 && B < 5)
+    return {type:'逃避型', category:'Avoidant', desc:'強烈的依戀逃避，不容易與人建立親密關係的類型。你傾向保持距離，重視獨立與個人空間，有時對過於親密的關係感到不自在。'};
+
+  // 安全・焦慮型：A > B 且 B ≧ 5
+  if (A > B && B >= 5)
     return {type:'安全・焦慮型', category:'Secure-Anxious', desc:'看得出依戀焦慮的傾向，但整體而言仍屬穩定。你在大多數情況下表現安全，但偶爾在親密關係中會感到焦慮，特別是在不確定對方感受時。'};
-  if (A > B && A > C && C >= 5)
-    return {type:'安全・逃避型', category:'Secure-Avoidant', desc:'看得出依戀逃避的傾向，但整體而言仍屬穩定。你整體上是安全的，但有時會對過於親密的關係感到不自在，需要一定的個人空間。'};
-  if (B > A && B > C && A >= 5)
-    return {type:'焦慮・安全型', category:'Anxious-Secure', desc:'強烈的依戀焦慮，同時具備一定適應力的類型。你的焦慮傾向明顯，但也有一定的安全基礎支撐你，使你能夠在關係中找到一些平衡。'};
-  if (C > A && C > B && A >= 5)
+
+  // 安全・逃避型：A > C 且 C ≧ 5
+  if (A > C && C >= 5)
+    return {type:'安全・逃避型', category:'Secure-Avoidant', desc:'看得出依戀逃避的傾向，但整體而言仍屬穩定。你整體上是安全的，但有時對過於親密的關係感到不自在，需要一定的個人空間。'};
+
+  // 焦慮・安全型：B ≧ A 且 A ≧ 5
+  if (B >= A && A >= 5)
+    return {type:'焦慮・安全型', category:'Anxious-Secure', desc:'強烈的依戀焦慮，同時具備一定適應力的類型。你的焦慮傾向明顯，但也有一定的安全基礎支撐你，使你能夠在關係中找到些許平衡。'};
+
+  // 逃避・安全型：C ≧ A 且 A ≧ 5
+  if (C >= A && A >= 5)
     return {type:'逃避・安全型', category:'Avoidant-Secure', desc:'強烈的依戀逃避，同時具備一定適應力的類型。你傾向迴避過度的親密，但也能在某些情況下建立有意義的連結。'};
-  if (B >= C && C >= A && B > 0)
-    return {type:'恐懼・逃避型', category:'Fearful-Avoidant', desc:'依戀焦慮和依戀逃避的傾向都很強，敏感、容易受傷、疑心較重的類型。你既渴望親密又害怕親密，在關係中常感到矛盾與不安，建議可以尋求專業支持。'};
-  return {type:'混合型', category:'Mixed', desc:'你的依戀形式較為複雜，各類型分數接近，難以歸類為單一形式。建議仔細閱讀各依戀形式的特徵描述，找出最符合自身感受的部分。'};
+
+  // 其餘情況（分數過低或難以歸類）
+  return {type:'混合型', category:'Mixed', desc:'你的依戀形式較為複雜，各類型分數相近，難以歸類為單一形式。建議仔細閱讀各依戀形式的特徵描述，找出最符合自身感受的部分。'};
 }
 
 function restart() {
